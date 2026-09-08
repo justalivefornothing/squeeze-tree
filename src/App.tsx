@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useState, type KeyboardEvent } from 'react'
+import { Bitstream } from './components/Bitstream'
 import { BuildControls } from './components/BuildControls'
+import { CodeTable } from './components/CodeTable'
+import { Comparison } from './components/Comparison'
+import { DecodePanel } from './components/DecodePanel'
 import { FrequencyTable } from './components/FrequencyTable'
 import { Section } from './components/Section'
 import { TreeView } from './components/TreeView'
-import { pathToRoot, symbols } from './huffman/huffman'
+import { encode, pathToRoot, symbols } from './huffman/huffman'
 import { buildModel, viewAt } from './model'
 
 const SAMPLE = 'she sells sea shells by the sea shore'
@@ -15,7 +19,7 @@ export default function App() {
   const [text, setText] = useState(SAMPLE)
   const [pos, setPos] = useState(0)
   const [playing, setPlaying] = useState(true)
-  const [canonical] = useState(false)
+  const [canonical, setCanonical] = useState(false)
   const [hoverChar, setHoverChar] = useState<string | null>(null)
 
   const model = useMemo(() => buildModel(text), [text])
@@ -80,6 +84,7 @@ export default function App() {
   }, [hoverChar, view.leafByChar])
 
   const count = symbols(text).length
+  const encoded = useMemo(() => encode(text, view.codes), [text, view.codes])
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-16 pt-5 sm:px-6">
@@ -125,10 +130,24 @@ export default function App() {
             <FrequencyTable freq={model.result.freq} hoverChar={hoverChar} onHover={setHoverChar} />
           </Section>
         </div>
+
+        <div className="lg:col-span-5">
+          <Section n={3} title="Comparison" aside={<span className="italic">Huffman against two fixed codes</span>}>
+            <Comparison
+              n={count}
+              alphabet={model.leaves}
+              fw={model.fw}
+              currentBits={view.currentBits}
+              fwBits={count * model.fw}
+              asciiBits={count * 8}
+              complete={view.complete}
+            />
+          </Section>
+        </div>
       </div>
 
       <Section
-        n={3}
+        n={4}
         title="The build"
         aside={<span className="italic">Focus the drawing and use ← → to step, space to play.</span>}
       >
@@ -158,6 +177,46 @@ export default function App() {
           />
         </div>
       </Section>
+
+      <div className="grid gap-x-10 lg:grid-cols-12">
+        <div className="lg:col-span-6">
+          <Section n={5} title="Codebook" aside={<span className="italic">Hover or focus a row to trace its path</span>}>
+            <CodeTable
+              freq={model.result.freq}
+              shown={view.shown}
+              codes={view.codes}
+              fw={model.fw}
+              totalBits={view.currentBits}
+              canonical={canonical}
+              onCanonical={setCanonical}
+              hoverChar={hoverChar}
+              onHover={setHoverChar}
+            />
+          </Section>
+        </div>
+        <div className="lg:col-span-6">
+          <Section n={6} title="Bitstream" aside={<span className="italic">Shaded per character</span>}>
+            <Bitstream
+              text={text}
+              freq={model.result.freq}
+              shown={view.shown}
+              fwCodes={model.fwCodes}
+              bits={view.currentBits}
+              complete={view.complete}
+              hoverChar={hoverChar}
+              onHover={setHoverChar}
+            />
+          </Section>
+          <Section n={7} title="Decode" aside={<span className="italic">{canonical ? 'Canonical' : 'Huffman'} tree</span>}>
+            <DecodePanel tree={view.root} encoded={encoded} />
+          </Section>
+        </div>
+      </div>
+
+      <footer className="small-caps mt-12 flex flex-wrap justify-between gap-2 border-t-2 border-ink pt-2 text-[11px]">
+        <span>Squeezetree · Huffman coding from scratch</span>
+        <span>MIT · 2026 Jafn</span>
+      </footer>
     </div>
   )
 }
