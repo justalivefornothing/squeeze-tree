@@ -26,16 +26,16 @@ export default function App() {
   const model = useMemo(() => buildModel(text), [text])
   const view = useMemo(() => viewAt(model, pos, canonical), [model, pos, canonical])
 
+  // "Playing" only means something while there are steps left; the flag itself can stay set.
+  const atEnd = view.pos >= model.total
+  const running = playing && !atEnd
+
   useEffect(() => {
-    if (!playing) return
-    if (view.pos >= model.total) {
-      setPlaying(false)
-      return
-    }
+    if (!running) return
     const delay = view.pos < model.merges ? mergeDelay(model.merges) : assignDelay(model.leaves)
     const timer = setTimeout(() => setPos(view.pos + 1), delay)
     return () => clearTimeout(timer)
-  }, [playing, view.pos, model.total, model.merges, model.leaves])
+  }, [running, view.pos, model.merges, model.leaves])
 
   const seek = (next: number) => {
     setPlaying(false)
@@ -43,11 +43,11 @@ export default function App() {
   }
 
   const togglePlay = () => {
-    if (playing) {
+    if (running) {
       setPlaying(false)
       return
     }
-    if (view.pos >= model.total) setPos(0)
+    if (atEnd) setPos(0)
     setPlaying(true)
   }
 
@@ -163,7 +163,7 @@ export default function App() {
             pos={view.pos}
             merges={model.merges}
             leaves={model.leaves}
-            playing={playing}
+            playing={running}
             heap={view.roots}
             active={view.active}
             onSeek={seek}
