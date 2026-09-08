@@ -29,3 +29,40 @@ html {
   font-variant-caps: all-small-caps;
   letter-spacing: 0.08em;
 }
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.node-enter {
+  animation: rise 0.45s ease-out both;
+}
+
+.edge-enter path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 0.5s ease-out 0.1s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .node-enter,
+  .edge-enter path {
+    animation-duration: 0.01s;
+  }
+  * {
+    transition-duration: 0.01s !important;
+  }
+}
