@@ -42,10 +42,11 @@ counter visibly ticks down as codes land.
 
 ## Milestones
 
-- [ ] plan + license
-- [ ] scaffold (vite react-ts, tailwind 4, vitest, fontsource)
-- [ ] core: heap, huffman, tests green
-- [ ] frequency table + tree build + controls
-- [ ] code table, bitstream, comparison, canonical toggle
-- [ ] decode panel, polish, smoke test
-- [ ] readme, publish (private)
+- [x] plan + license
+- [x] scaffold (vite react-ts, tailwind 4, vitest, fontsource)
+- [x] core: heap, huffman, tests green
+- [x] frequency table + tree build + controls
+- [x] code table, bitstream, comparison, canonical toggle
+- [x] decode panel, polish, smoke test
+- [x] readme
+- [ ] publish (private)
