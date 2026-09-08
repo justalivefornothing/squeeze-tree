@@ -45,30 +45,32 @@ export function CodeTable({ freq, shown, codes, fw, totalBits, canonical, onCano
             <span className="text-right">total</span>
             <span className="text-right">share</span>
           </div>
-          {rows.map(({ ch, count }) => {
-            const code = shown.get(ch) ?? null
-            const len = code ? code.length : fw
-            const hot = hoverChar === ch
-            return (
-              <div
-                key={ch}
-                tabIndex={0}
-                onMouseEnter={() => onHover(ch)}
-                onFocus={() => onHover(ch)}
-                onBlur={() => onHover(null)}
-                className={`grid ${cols} items-center border-b border-faint py-1 text-sm transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink ${hot ? 'bg-neutral-100 font-semibold' : ''}`}
-              >
-                <span className="font-mono text-base">{glyph(ch)}</span>
-                <span className="text-right tabular-nums">{count}</span>
-                <span className="pl-3 font-mono tracking-wide">
-                  {code ?? <span className="text-faint">{'·'.repeat(fw)}</span>}
-                </span>
-                <span className={`text-right tabular-nums ${code ? '' : 'italic text-rule'}`}>{len}</span>
-                <span className={`text-right tabular-nums ${code ? '' : 'italic text-rule'}`}>{count * len}</span>
-                <span className="text-right tabular-nums text-xs">{pct(count * len, totalBits)}</span>
-              </div>
-            )
-          })}
+          <div className="max-h-[520px] overflow-y-auto">
+            {rows.map(({ ch, count }) => {
+              const code = shown.get(ch) ?? null
+              const len = code ? code.length : fw
+              const hot = hoverChar === ch
+              return (
+                <div
+                  key={ch}
+                  tabIndex={0}
+                  onMouseEnter={() => onHover(ch)}
+                  onFocus={() => onHover(ch)}
+                  onBlur={() => onHover(null)}
+                  className={`grid ${cols} items-center border-b border-faint py-1 text-sm transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ink ${hot ? 'bg-neutral-100 font-semibold' : ''}`}
+                >
+                  <span className="font-mono text-base">{glyph(ch)}</span>
+                  <span className="text-right tabular-nums">{count}</span>
+                  <span className="pl-3 font-mono tracking-wide">
+                    {code ?? <span className="text-faint">{'·'.repeat(fw)}</span>}
+                  </span>
+                  <span className={`text-right tabular-nums ${code ? '' : 'italic text-rule'}`}>{len}</span>
+                  <span className={`text-right tabular-nums ${code ? '' : 'italic text-rule'}`}>{count * len}</span>
+                  <span className="text-right tabular-nums text-xs">{pct(count * len, totalBits)}</span>
+                </div>
+              )
+            })}
+          </div>
           <div className={`grid ${cols} border-b border-ink py-1 text-sm font-semibold`}>
             <span className="col-span-4 small-caps">total</span>
             <span className="text-right tabular-nums">{totalBits}</span>

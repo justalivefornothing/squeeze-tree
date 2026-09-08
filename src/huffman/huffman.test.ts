@@ -8,6 +8,7 @@ import {
   compressionRatio,
   decode,
   encode,
+  entropy,
   fixedWidthBits,
   fixedWidthCodes,
   frequencies,
@@ -174,5 +175,19 @@ describe('canonical huffman', () => {
     expect(tree?.char).toBe('z')
     expect(tree?.weight).toBe(4)
     expect(decode(tree, '000')).toBe('zzz')
+  })
+})
+
+describe('entropy', () => {
+  it('bounds the Huffman code from below by less than one bit per symbol', () => {
+    const text = 'abracadabra'
+    const r = huffman(text)
+    const h = entropy(r.freq)
+    const perSymbol = r.encoded.length / text.length
+    expect(h).toBeCloseTo(2.0404, 3)
+    expect(perSymbol).toBeGreaterThanOrEqual(h)
+    expect(perSymbol).toBeLessThan(h + 1)
+    expect(entropy(frequencies('zzzz'))).toBe(0)
+    expect(entropy(new Map())).toBe(0)
   })
 })

@@ -26,29 +26,32 @@ export function FrequencyTable({ freq, hoverChar, onHover }: Props) {
         <span className="pl-3">frequency</span>
         <span className="text-right">share</span>
       </div>
-      <div className="relative" style={{ height: rows.length * ROW }}>
-        {[...freq].map(([ch, count]) => {
-          const i = indexOf.get(ch) ?? 0
-          const hot = hoverChar === ch
-          return (
-            <div
-              key={ch}
-              className={`absolute inset-x-0 grid grid-cols-[2.25rem_3rem_1fr_3.5rem] items-center border-b border-faint text-sm transition-transform duration-500 ease-out ${hot ? 'bg-neutral-100 font-semibold' : ''}`}
-              style={{ transform: `translateY(${i * ROW}px)`, height: ROW }}
-              onMouseEnter={() => onHover(ch)}
-            >
-              <span className="font-mono text-base">{glyph(ch)}</span>
-              <span className="text-right tabular-nums">{count}</span>
-              <span className="flex items-center pl-3 pr-2">
-                <span
-                  className="h-2.5 bg-ink transition-[width] duration-300 ease-out"
-                  style={{ width: `${(count / max) * 100}%` }}
-                />
-              </span>
-              <span className="text-right tabular-nums text-xs">{pct(count, total)}</span>
-            </div>
-          )
-        })}
+      <div className="max-h-[480px] overflow-y-auto">
+        {/* Rows keep their DOM order (first seen) and slide to their sorted slot. */}
+        <div className="relative" style={{ height: rows.length * ROW }}>
+          {[...freq].map(([ch, count]) => {
+            const i = indexOf.get(ch) ?? 0
+            const hot = hoverChar === ch
+            return (
+              <div
+                key={ch}
+                className={`absolute inset-x-0 grid grid-cols-[2.25rem_3rem_1fr_3.5rem] items-center border-b border-faint text-sm transition-transform duration-500 ease-out ${hot ? 'bg-neutral-100 font-semibold' : ''}`}
+                style={{ transform: `translateY(${i * ROW}px)`, height: ROW }}
+                onMouseEnter={() => onHover(ch)}
+              >
+                <span className="font-mono text-base">{glyph(ch)}</span>
+                <span className="text-right tabular-nums">{count}</span>
+                <span className="flex items-center pl-3 pr-2">
+                  <span
+                    className="h-2.5 bg-ink transition-[width] duration-300 ease-out"
+                    style={{ width: `${(count / max) * 100}%` }}
+                  />
+                </span>
+                <span className="text-right tabular-nums text-xs">{pct(count, total)}</span>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

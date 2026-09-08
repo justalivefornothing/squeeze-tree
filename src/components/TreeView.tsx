@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import type { HuffNode, MergeStep } from '../huffman/huffman'
 import { glyph } from './format'
 
@@ -31,6 +32,7 @@ interface Placed {
 }
 
 export function TreeView({ roots, leafOrder, height, active, pathIds, onHover }: Props) {
+  const scroller = useRef<HTMLDivElement>(null)
   const xOfLeaf = new Map(leafOrder.map((ch, i) => [ch, PAD + LEAF_W / 2 + i * COL]))
   const yOfHeight = (h: number): number => PAD + INT_H / 2 + (height - h) * ROW
   const placed = new Map<number, Placed>()
@@ -53,6 +55,12 @@ export function TreeView({ roots, leafOrder, height, active, pathIds, onHover }:
   const width = PAD * 2 + LEAF_W + Math.max(0, leafOrder.length - 1) * COL
   const svgHeight = yOfHeight(0) + LEAF_H / 2 + PAD
 
+  // Wide trees overflow horizontally; start them centred so the root is in view.
+  useEffect(() => {
+    const el = scroller.current
+    if (el) el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2
+  }, [width])
+
   if (roots.length === 0) {
     return (
       <p className="border-y border-ink py-14 text-center text-sm italic text-rule">
@@ -73,7 +81,7 @@ export function TreeView({ roots, leafOrder, height, active, pathIds, onHover }:
   const activeIds = active ? new Set([active.merged.id, active.left.id, active.right.id]) : new Set<number>()
 
   return (
-    <div className="overflow-x-auto border-y border-ink py-2" onMouseLeave={() => onHover(null)}>
+    <div ref={scroller} className="overflow-x-auto border-y border-ink py-2" onMouseLeave={() => onHover(null)}>
       <svg
         width={width}
         height={svgHeight}

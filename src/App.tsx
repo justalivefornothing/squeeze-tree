@@ -7,12 +7,13 @@ import { DecodePanel } from './components/DecodePanel'
 import { FrequencyTable } from './components/FrequencyTable'
 import { Section } from './components/Section'
 import { TreeView } from './components/TreeView'
-import { encode, pathToRoot, symbols } from './huffman/huffman'
+import { encode, entropy, pathToRoot, symbols } from './huffman/huffman'
 import { buildModel, viewAt } from './model'
 
 const SAMPLE = 'she sells sea shells by the sea shore'
-const MERGE_MS = 620
-const ASSIGN_MS = 200
+/** Tempo adapts so even a long paragraph finishes its build in about ten seconds. */
+const mergeDelay = (merges: number): number => Math.max(240, Math.min(620, 7000 / Math.max(1, merges)))
+const assignDelay = (leaves: number): number => Math.max(60, Math.min(200, 2400 / Math.max(1, leaves)))
 const NO_PATH: ReadonlySet<number> = new Set()
 
 export default function App() {
@@ -31,10 +32,10 @@ export default function App() {
       setPlaying(false)
       return
     }
-    const delay = view.pos < model.merges ? MERGE_MS : ASSIGN_MS
+    const delay = view.pos < model.merges ? mergeDelay(model.merges) : assignDelay(model.leaves)
     const timer = setTimeout(() => setPos(view.pos + 1), delay)
     return () => clearTimeout(timer)
-  }, [playing, view.pos, model.total, model.merges])
+  }, [playing, view.pos, model.total, model.merges, model.leaves])
 
   const seek = (next: number) => {
     setPlaying(false)
@@ -140,6 +141,7 @@ export default function App() {
               currentBits={view.currentBits}
               fwBits={count * model.fw}
               asciiBits={count * 8}
+              entropyPerSymbol={entropy(model.result.freq)}
               complete={view.complete}
             />
           </Section>

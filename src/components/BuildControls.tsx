@@ -38,7 +38,7 @@ export function BuildControls({ pos, merges, leaves, playing, heap, active, onSe
 
   let status: ReactNode
   if (total === 0) status = <span className="italic text-rule">Waiting for text.</span>
-  else if (pos === 0 && merges > 0) status = <>Ready — {leaves} leaves waiting in the heap.</>
+  else if (pos === 0 && merges > 0) status = <>Ready — {leaves} leaves waiting in the heap; the two lightest merge first.</>
   else if (pos <= merges && active)
     status = (
       <>
@@ -49,7 +49,7 @@ export function BuildControls({ pos, merges, leaves, playing, heap, active, onSe
       </>
     )
   else if (!atEnd) status = <>Assigning codes by depth-first walk — {pos - merges} of {leaves}.</>
-  else status = <>Complete — {leaves} prefix-free codes assigned.</>
+  else status = <>Complete — {leaves} prefix-free code{leaves === 1 ? '' : 's'} assigned.</>
 
   return (
     <div className="flex flex-col gap-3">

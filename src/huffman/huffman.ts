@@ -272,3 +272,16 @@ export function pathToRoot(node: HuffNode): HuffNode[] {
   for (let cur: HuffNode | null = node; cur; cur = cur.parent) path.push(cur)
   return path.reverse()
 }
+
+/** Shannon entropy in bits per symbol — the floor no prefix code can beat. */
+export function entropy(freq: Map<string, number>): number {
+  let n = 0
+  for (const count of freq.values()) n += count
+  if (n === 0) return 0
+  let h = 0
+  for (const count of freq.values()) {
+    const p = count / n
+    h -= p * Math.log2(p)
+  }
+  return h
+}

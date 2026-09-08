@@ -7,6 +7,8 @@ interface Props {
   currentBits: number
   fwBits: number
   asciiBits: number
+  /** Shannon entropy in bits per symbol. */
+  entropyPerSymbol: number
   complete: boolean
 }
 
@@ -29,7 +31,7 @@ function Row({ label, note, bits, max }: { label: string; note: string; bits: nu
   )
 }
 
-export function Comparison({ n, alphabet, fw, currentBits, fwBits, asciiBits, complete }: Props) {
+export function Comparison({ n, alphabet, fw, currentBits, fwBits, asciiBits, entropyPerSymbol, complete }: Props) {
   if (n === 0) {
     return <p className="border-t border-ink py-6 text-center text-sm italic text-rule">Nothing to compare yet.</p>
   }
@@ -62,6 +64,21 @@ export function Comparison({ n, alphabet, fw, currentBits, fwBits, asciiBits, co
       <Row label="8-bit ASCII" note={`${n} × 8`} bits={asciiBits} max={asciiBits} />
       <Row label="Fixed width" note={`${n} × ⌈log₂ ${alphabet}⌉ = ${n} × ${fw}`} bits={fwBits} max={asciiBits} />
       <Row label="Huffman" note="Σ count × code length" bits={currentBits} max={asciiBits} />
+      <p className="border-t border-faint pt-3 text-xs leading-relaxed">
+        <b>Shannon floor.</b> The entropy of this text is{' '}
+        <span className="font-mono tabular-nums">{entropyPerSymbol.toFixed(3)}</span> bits per character, so no
+        symbol-by-symbol prefix code can go below{' '}
+        <span className="font-mono tabular-nums">{Math.ceil(entropyPerSymbol * n)}</span> bits. Huffman is guaranteed
+        to land within one bit per character of that floor
+        {complete ? (
+          <>
+            {' '}
+            — here it spends <span className="font-mono tabular-nums">{(currentBits / n).toFixed(3)}</span>.
+          </>
+        ) : (
+          '.'
+        )}
+      </p>
     </div>
   )
 }
