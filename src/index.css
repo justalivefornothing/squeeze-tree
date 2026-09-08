@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/playfair-display/wght.css';
+@import '@fontsource-variable/playfair-display/wght-italic.css';
+@import '@fontsource-variable/source-serif-4/wght.css';
+@import '@fontsource-variable/source-serif-4/wght-italic.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
+@theme {
+  --font-display: 'Playfair Display Variable', 'Times New Roman', serif;
+  --font-serif: 'Source Serif 4 Variable', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --color-ink: #000000;
+  --color-paper: #ffffff;
+  --color-rule: #8a8a8a;
+  --color-faint: #d9d9d9;
+  --color-red: #c8102e;
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  font-feature-settings: 'onum', 'pnum';
+  -webkit-font-smoothing: antialiased;
+}
+
+.small-caps {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+}
